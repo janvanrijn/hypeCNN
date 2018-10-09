@@ -63,7 +63,6 @@ def test(model, device, test_loader):
 lr = 0.01
 momentum = 0.9
 batch_size = 64
-epochs = 5
 log_interval = 100
 
 if torch.cuda.is_available():
@@ -73,6 +72,7 @@ else:
 
 if sys.argv[1]=='0':
 	print('MNIST')
+	epochs = 5
 	train_loader = torch.utils.data.DataLoader(
 		datasets.MNIST('../data', train=True, download=True,
 					   transform=transforms.Compose([transforms.Pad(2), transforms.ToTensor(),
@@ -86,6 +86,7 @@ if sys.argv[1]=='0':
 	
 if sys.argv[1]=='1':
 	print('CIFAR10')
+	epochs = 40
 	transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 	trainset = datasets.CIFAR10(root='./data', train=True,
 											download=True, transform=transform)
@@ -98,6 +99,7 @@ if sys.argv[1]=='1':
 
 if sys.argv[1]=='2':
 	print('FashionMNIST')
+	epochs = 5
 	train_loader = torch.utils.data.DataLoader(
 		datasets.FashionMNIST('../data', train=True, download=True,
 					   transform=transforms.Compose([transforms.Pad(2), transforms.ToTensor(),
@@ -119,6 +121,12 @@ optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 best_test_acc = 0
 
 for epoch in range(1, epochs + 1):
+	if sys.argv[1]=='1':
+		if epoch==21:
+			lr /= 10
+		if epoch==31:
+			lr /= 10
+	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 	train(model, device, train_loader, optimizer, epoch)
 	test_acc = test(model, device, test_loader)
 	if test_acc>best_test_acc:
