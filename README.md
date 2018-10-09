@@ -1,2 +1,2 @@
-# proCNN
+# hypeCNN
 Hyperparameter importance for CNNs
