@@ -87,7 +87,7 @@ if sys.argv[1]=='0':
 	
 if sys.argv[1]=='1':
 	print('CIFAR10')
-	epochs = 40
+	epochs = 350
 	transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 	trainset = datasets.CIFAR10(root='./data', train=True,
 											download=True, transform=transform)
@@ -124,13 +124,13 @@ best_test_acc = 0
 
 for epoch in range(1, epochs + 1):
 	if sys.argv[1]=='1':
-		if epoch==21:
+		if epoch==151:
 			lr /= 10
-		if epoch==31:
+		if epoch==251:
 			lr /= 10
 	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 	train(model, device, train_loader, optimizer, epoch)
 	test_acc = test(model, device, test_loader)
-	if test_acc>best_test_acc:
+	if test_acc>best_test_acc and epoch%10==0:
 		best_test_acc = test_acc
 		torch.save(model, 'cifar10_'+str(epoch)+'_'+str(test_acc))
