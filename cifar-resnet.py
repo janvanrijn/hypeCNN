@@ -6,6 +6,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 import sys
 from resnet import ResNet18
+from time import time
 
 # class Net(nn.Module):
 # 	def __init__(self):
@@ -61,12 +62,13 @@ def test(model, device, test_loader):
 	return test_acc
 
 
-lr = 0.01
+lr = 0.1
 momentum = 0.9
-batch_size = 64
+batch_size = 128
 log_interval = 100
 
 if torch.cuda.is_available():
+	print('CUDA!!')
 	device = torch.device("cuda")
 else:
 	device = torch.device("cpu")
@@ -88,13 +90,23 @@ if sys.argv[1]=='0':
 if sys.argv[1]=='1':
 	print('CIFAR10')
 	epochs = 350
-	transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+	#transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+	transform_train = transforms.Compose([
+    transforms.RandomCrop(32, padding=4),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),])
+	
+	transform_test = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),])
+	
 	trainset = datasets.CIFAR10(root='./data', train=True,
-											download=True, transform=transform)
+											download=True, transform=transform_train)
 	train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
 											  shuffle=True)
 	testset = datasets.CIFAR10(root='./data', train=False,
-										   download=True, transform=transform)
+										   download=True, transform=transform_test)
 	test_loader = torch.utils.data.DataLoader(testset, batch_size=1000,
 											 shuffle=False)
 
@@ -128,9 +140,12 @@ for epoch in range(1, epochs + 1):
 			lr /= 10
 		if epoch==251:
 			lr /= 10
-	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=5e-4)
+	start = time()
 	train(model, device, train_loader, optimizer, epoch)
+	print('Time: {}'.format(time()-start))
 	test_acc = test(model, device, test_loader)
 	if test_acc>best_test_acc and epoch%10==0:
 		best_test_acc = test_acc
 		torch.save(model, 'cifar10_'+str(epoch)+'_'+str(test_acc))
+
