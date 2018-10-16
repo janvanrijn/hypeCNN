@@ -78,7 +78,7 @@ if sys.argv[1]=='0':
 	epochs = 5
 	train_loader = torch.utils.data.DataLoader(
 		datasets.MNIST('../data', train=True, download=True,
-					   transform=transforms.Compose([transforms.Pad(2), transforms.ToTensor(),
+					   transform=transforms.Compose([transforms.RandomCrop(32, padding=6), transforms.ToTensor(),
 						transforms.Normalize((0.1307,), (0.3081,)),transforms.Lambda(lambda x: x.repeat(3, 1, 1) )])),
 						batch_size=batch_size, shuffle=True)
 	test_loader = torch.utils.data.DataLoader(
@@ -115,7 +115,7 @@ if sys.argv[1]=='2':
 	epochs = 5
 	train_loader = torch.utils.data.DataLoader(
 		datasets.FashionMNIST('../data', train=True, download=True,
-					   transform=transforms.Compose([transforms.Pad(2), transforms.ToTensor(),
+					   transform=transforms.Compose([transforms.RandomCrop(32, padding=6), transforms.ToTensor(),
 						transforms.Normalize((0.1307,), (0.3081,)),transforms.Lambda(lambda x: x.repeat(3, 1, 1) )])),
 						batch_size=batch_size, shuffle=True)
 	test_loader = torch.utils.data.DataLoader(
