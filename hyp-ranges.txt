@@ -1,0 +1,9 @@
+lr - float, log, (1e-6,1e-1)
+epoch - integer, linear, (1,350) (dataset dependent)
+momentum - float, linear, (0,1)
+batch_size - integer, log, (16,128)
+lr_decay 
+	- No of decays, linear, (0,5)
+	- Size of decay, log, (1e-3, 1e-1)
+	- Time of decay, linear, TBD
+weight_decay - TBD
