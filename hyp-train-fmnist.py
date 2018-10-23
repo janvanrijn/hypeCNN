@@ -84,15 +84,16 @@ def test(model, device, test_loader):
 
 def load_data(shuffle, batch_size):
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=True, download=True,
+        datasets.FashionMNIST('../data', train=True, download=True,
                        transform=transforms.Compose([transforms.RandomCrop(32, padding=6), transforms.ToTensor(),
                         transforms.Normalize((0.1307,), (0.3081,)),transforms.Lambda(lambda x: x.repeat(3, 1, 1) )])),
                         batch_size=batch_size, shuffle=shuffle)
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=False, download=True,
+        datasets.FashionMNIST('../data', train=False, download=True,
                         transform=transforms.Compose([transforms.Pad(2), transforms.ToTensor(),
                         transforms.Normalize((0.1307,), (0.3081,)), transforms.Lambda(lambda x: x.repeat(3, 1, 1) )])),
                         batch_size=1000, shuffle=shuffle)
+
     return train_loader, test_loader
 
 def run_train(seed):
@@ -119,7 +120,7 @@ def run_train(seed):
 	return test_acc, test_loss, total_time, hyps
 
 if __name__ == '__main__':
-	for i in range(50):
+	for i in range(1):
 		try:
 			test_acc, test_loss, total_time, hyps = run_train(i)
 			s = str(i)+' '+str(test_acc)+' '+str(test_loss)+' '+str(total_time)+' '+str(hyps)+'\n'
