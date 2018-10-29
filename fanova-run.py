@@ -8,12 +8,14 @@ from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 import os
 path = os.path.dirname(os.path.realpath(__file__))
 
+response_type = 'acc'#'time' 
+
 # directory in which you can find all plots
-plot_dir = path + '/data/test_plots'
+plot_dir = path + '/data/test_plots_'+response_type
 
 # artificial dataset (here: features)
 features = np.loadtxt(path + '/data/mnist-features.csv', delimiter=",")
-responses = np.loadtxt(path + '/data/mnist-responses.csv', delimiter=",")
+responses = np.loadtxt(path + '/data/mnist-responses-'+response_type+'.csv', delimiter=",")
 
 def get_hyperparameter_search_space(seed=None):
     """
@@ -64,7 +66,7 @@ def get_hyperparameter_search_space(seed=None):
 cs = get_hyperparameter_search_space()
 
 # create an instance of fanova with trained forest and ConfigSpace
-f = fANOVA(X = features, Y = responses, config_space=cs, seed=7)
+f = fANOVA(X = features, Y = responses, config_space=cs, n_trees=16, seed=7)
 
 # marginal of particular parameter:
 # dims = (1, )

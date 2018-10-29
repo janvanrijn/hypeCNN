@@ -1,13 +1,13 @@
 import csv
 import math
 
-with open('mnist-responses.csv', 'w') as csvfile:
+with open('mnist-responses-time.csv', 'w') as csvfile:
 	writer = csv.writer(csvfile, delimiter=',')#,quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	f = open('output-all.txt', 'r')
 	lines = f.readlines()
 	for line in lines:
 		words = line.split()
-		res = [words[1]]
+		res = [words[3]]
 		# res = []
 		# res.append(int(math.log(int(words[5][:-1]),2)))
 		# res.append(words[7][:-1])
