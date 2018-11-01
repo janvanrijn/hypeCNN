@@ -11,11 +11,11 @@ path = os.path.dirname(os.path.realpath(__file__))
 response_type = 'acc'#'time' 
 
 # directory in which you can find all plots
-plot_dir = path + '/data/test_plots_'+response_type
+plot_dir = path + '/data/fmnist/test_plots_'+response_type
 
 # artificial dataset (here: features)
-features = np.loadtxt(path + '/data/mnist-features.csv', delimiter=",")
-responses = np.loadtxt(path + '/data/mnist-responses-'+response_type+'.csv', delimiter=",")
+features = np.loadtxt(path + '/data/fmnist/fmnist-features.csv', delimiter=",")
+responses = np.loadtxt(path + '/data/fmnist/fmnist-responses-'+response_type+'.csv', delimiter=",")
 
 def get_hyperparameter_search_space(seed=None):
     """
