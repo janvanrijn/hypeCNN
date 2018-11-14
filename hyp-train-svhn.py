@@ -139,7 +139,7 @@ if __name__ == '__main__':
 			acc_list, loss_list, time_list, hyps = run_train(i)
 			s = ''
 			for j in range(acc_list):
-				s += str(i)+' '+str(acc_list[j])+' '+str(loss_list[j])+' '+str(time_list[j])+' '+str(hyps)+'\n'
+				s += str(i)+' '+str(acc_list[j])+' '+str(loss_list[j])+' '+str(time_list[j])+' '+str(j)+' '+str(hyps)+'\n'
 		except:
 			s = str(i)+' ERROR!\n'
 		f = open('output.txt', 'a')
