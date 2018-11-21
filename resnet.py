@@ -97,8 +97,8 @@ class ResNet(nn.Module):
         return out
 
 
-def ResNet18():
-    return ResNet(BasicBlock, [2,2,2,2])
+def ResNet18(num_classes=10):
+    return ResNet(BasicBlock, [2,2,2,2], num_classes)
 
 def ResNet34():
     return ResNet(BasicBlock, [3,4,6,3])
@@ -119,3 +119,4 @@ def test():
     print(y.size())
 
 # test()
+
