@@ -42,7 +42,7 @@ def get_hyperparameter_search_space(seed=None):
         name='learning_rate_init', lower=1e-6, upper=1, log=True, default_value=1e-1)
 
     epochs = ConfigSpace.UniformIntegerHyperparameter(
-        name='epochs', lower=1, upper=400, default_value=300)
+        name='epochs', lower=1, upper=200, default_value=100)
     batch_size = ConfigSpace.CategoricalHyperparameter(
         name='batch_size', choices=[32, 64, 128, 256, 512], default_value=128)
     # shuffle = ConfigSpace.CategoricalHyperparameter(
