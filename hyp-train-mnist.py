@@ -30,15 +30,15 @@ def get_hyperparameter_search_space(seed=None):
     #     name='batch_size', lower=1, upper=256, log=True, default_value=128)
     # learning_rate = ConfigSpace.CategoricalHyperparameter(
     #     name='learning_rate', choices=['constant', 'invscaling', 'adaptive'], default_value='constant')
-    learning_rate = ConfigSpace.UniformFloatHyperparameter(
-        name='learning_rate', lower=1e-6, upper=1e-1, log=True, default_value=1e-2)
+    learning_rate_init = ConfigSpace.UniformFloatHyperparameter(
+        name='learning_rate_init', lower=1e-6, upper=1e-1, log=True, default_value=1e-2)
 
     epochs = ConfigSpace.UniformIntegerHyperparameter(
         name='epochs', lower=1, upper=50, default_value=20)
     batch_size = ConfigSpace.CategoricalHyperparameter(
-        name='batch_size', choices=[1, 2, 4, 8, 16, 32, 64, 128, 256, 512], default_value=128)
-    shuffle = ConfigSpace.CategoricalHyperparameter(
-        name='shuffle', choices=[True, False], default_value=True)
+        name='batch_size', choices=[32, 64, 128, 256, 512], default_value=128)
+    # shuffle = ConfigSpace.CategoricalHyperparameter(
+    #     name='shuffle', choices=[True, False], default_value=True)
     momentum = ConfigSpace.UniformFloatHyperparameter(
         name='momentum', lower=0, upper=1, default_value=0.9)
     weight_decay = ConfigSpace.UniformFloatHyperparameter(
@@ -46,9 +46,9 @@ def get_hyperparameter_search_space(seed=None):
 
     cs.add_hyperparameters([
         batch_size,
-        learning_rate,
+        learning_rate_init,
         epochs,
-        shuffle,
+        #shuffle,
         momentum,
         weight_decay,
     ])
@@ -96,35 +96,45 @@ def load_data(shuffle, batch_size):
     return train_loader, test_loader
 
 def run_train(seed):
-	device = torch.device("cuda")
-	model = ResNet18().to(device)
-	#### read hyps here ####
-	cs = get_hyperparameter_search_space(seed)
-	hyps = cs.sample_configuration(1).get_dictionary()
-	lr = hyps['learning_rate']
-	mom = hyps['momentum']
-	batch_size = hyps['batch_size']
-	epochs = hyps['epochs']
-	shuffle = hyps['shuffle']
-	weight_decay = hyps['weight_decay']
+    device = torch.device("cuda")
+    model = ResNet18().to(device)
+    #### read hyps here ####
+    cs = get_hyperparameter_search_space(seed)
+    hyps = cs.sample_configuration(1).get_dictionary()
+    lr = hyps['learning_rate_init']
+    mom = hyps['momentum']
+    batch_size = hyps['batch_size']
+    epochs = hyps['epochs']
+    shuffle = True #hyps['shuffle']
+    weight_decay = hyps['weight_decay']
 
-	train_loader, test_loader = load_data(shuffle, batch_size)
-	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=mom, weight_decay=weight_decay)
+    train_loader, test_loader = load_data(shuffle, batch_size)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=mom, weight_decay=weight_decay)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', min_lr=1e-6)
 
-	start = time()
-	for epoch in range(epochs):
-	    train(model, device, train_loader, optimizer, epoch)
-	total_time = time()-start
-	test_acc, test_loss = test(model, device, test_loader)
-	return test_acc, test_loss, total_time, hyps
+    acc_list = []
+    loss_list = []
+    time_list = []
+
+    start = time()
+    for epoch in range(epochs):
+        train(model, device, train_loader, optimizer, epoch)
+        test_acc, test_loss = test(model, device, test_loader)
+        scheduler.step(test_acc/100)
+        acc_list.append(test_acc)
+        loss_list.append(test_loss)
+        time_list.append(time()-start)
+    return acc_list, loss_list, time_list, hyps
 
 if __name__ == '__main__':
-	for i in range(50):
-		try:
-			test_acc, test_loss, total_time, hyps = run_train(i)
-			s = str(i)+' '+str(test_acc)+' '+str(test_loss)+' '+str(total_time)+' '+str(hyps)+'\n'
-		except:
-			s = str(i)+' ERROR!\n'
-		f = open('output.txt', 'a')
-		f.write(s)
-		print(s)
+    for i in range(50):
+        try:
+            acc_list, loss_list, time_list, hyps = run_train(i)
+            s = ''
+            for j in range(len(acc_list)):
+                s += str(i)+' '+str(acc_list[j])+' '+str(loss_list[j])+' '+str(time_list[j])+' '+str(j)+' '+str(hyps)+'\n'
+        except:
+            s = str(i)+' ERROR!\n'
+        f = open('output.txt', 'a')
+        f.write(s)
+        print(s)
