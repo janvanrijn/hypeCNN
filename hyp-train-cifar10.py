@@ -34,7 +34,7 @@ def get_hyperparameter_search_space(seed=None):
 		name='learning_rate_init', lower=1e-6, upper=1, log=True, default_value=1e-1)
 
 	epochs = ConfigSpace.UniformIntegerHyperparameter(
-		name='epochs', lower=1, upper=400, default_value=300)
+		name='epochs', lower=1, upper=200, default_value=150)
 	batch_size = ConfigSpace.CategoricalHyperparameter(
 		name='batch_size', choices=[32, 64, 128, 256, 512], default_value=128)
 	# shuffle = ConfigSpace.CategoricalHyperparameter(
@@ -120,19 +120,27 @@ def run_train(seed):
 	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=mom, weight_decay=weight_decay)
 	scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', min_lr=1e-6)
 
+	acc_list = []
+	loss_list = []
+	time_list = []
+
 	start = time()
 	for epoch in range(epochs):
 		train(model, device, train_loader, optimizer, epoch)
 		test_acc, test_loss = test(model, device, test_loader)
 		scheduler.step(test_acc/100)
-	total_time = time()-start
-	return test_acc, test_loss, total_time, hyps
+		acc_list.append(test_acc)
+		loss_list.append(test_loss)
+		time_list.append(time()-start)
+	return acc_list, loss_list, time_list, hyps
 
 if __name__ == '__main__':
 	for i in range(25):
 		try:
-			test_acc, test_loss, total_time, hyps = run_train(i)
-			s = str(i)+' '+str(test_acc)+' '+str(test_loss)+' '+str(total_time)+' '+str(hyps)+'\n'
+			acc_list, loss_list, time_list, hyps = run_train(i)
+			s = ''
+			for j in range(len(acc_list)):
+				s += str(i)+' '+str(acc_list[j])+' '+str(loss_list[j])+' '+str(time_list[j])+' '+str(j)+' '+str(hyps)+'\n'
 		except:
 			s = str(i)+' ERROR!\n'
 		f = open('output.txt', 'a')
