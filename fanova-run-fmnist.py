@@ -16,8 +16,8 @@ response_type = 'time'
 plot_dir = path + '/test_plots_'+response_type
 
 # artificial dataset (here: features)
-features = np.loadtxt(path + '/cifar10-features.csv', delimiter=",")
-responses = np.loadtxt(path + '/cifar10-responses-'+response_type+'.csv', delimiter=",")
+features = np.loadtxt(path + '/fmnist-features.csv', delimiter=",")
+responses = np.loadtxt(path + '/fmnist-responses-'+response_type+'.csv', delimiter=",")
 
 def get_hyperparameter_search_space(seed=None):
     """
@@ -41,10 +41,10 @@ def get_hyperparameter_search_space(seed=None):
     # learning_rate = ConfigSpace.CategoricalHyperparameter(
     #     name='learning_rate', choices=['constant', 'invscaling', 'adaptive'], default_value='constant')
     learning_rate_init = ConfigSpace.UniformFloatHyperparameter(
-        name='learning_rate_init', lower=1e-6, upper=1, log=True, default_value=1e-1)
+        name='learning_rate_init', lower=1e-6, upper=1e-1, log=True, default_value=1e-2)
 
     epochs = ConfigSpace.UniformIntegerHyperparameter(
-        name='epochs', lower=1, upper=200, default_value=150)
+        name='epochs', lower=1, upper=50, default_value=20)
     batch_size = ConfigSpace.CategoricalHyperparameter(
         name='batch_size', choices=[32, 64, 128, 256, 512], default_value=128)
     # shuffle = ConfigSpace.CategoricalHyperparameter(
@@ -58,7 +58,7 @@ def get_hyperparameter_search_space(seed=None):
         batch_size,
         learning_rate_init,
         epochs,
-        # shuffle,
+        #shuffle,
         momentum,
         weight_decay,
     ])
@@ -80,6 +80,6 @@ f = fANOVA(X = features, Y = responses, config_space=cs, n_trees=16, seed=7)
 vis = fanova.visualizer.Visualizer(f, cs, plot_dir)
 # plot marginals for each parameter
 for i in range(5):
-	vis.plot_marginal(i, show=False)
-	plt.savefig(plot_dir+'/'+str(i)+'.png')
-	plt.clf()
+    vis.plot_marginal(i, show=False)
+    plt.savefig(plot_dir+'/'+str(i)+'.png')
+    plt.clf()

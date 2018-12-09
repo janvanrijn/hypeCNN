@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import numpy as np
 from fanova import fANOVA
 import fanova.visualizer
@@ -8,14 +10,14 @@ from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 import os
 path = os.path.dirname(os.path.realpath(__file__))
 
-response_type = 'time'#'acc' 
+response_type = 'time'
 
 # directory in which you can find all plots
-plot_dir = path + '/data/fmnist/test_plots_'+response_type
+plot_dir = path + '/test_plots_'+response_type
 
 # artificial dataset (here: features)
-features = np.loadtxt(path + '/data/fmnist/fmnist-features.csv', delimiter=",")
-responses = np.loadtxt(path + '/data/fmnist/fmnist-responses-'+response_type+'.csv', delimiter=",")
+features = np.loadtxt(path + '/mnist-features.csv', delimiter=",")
+responses = np.loadtxt(path + '/mnist-responses-'+response_type+'.csv', delimiter=",")
 
 def get_hyperparameter_search_space(seed=None):
     """
@@ -38,15 +40,15 @@ def get_hyperparameter_search_space(seed=None):
     #     name='batch_size', lower=1, upper=256, log=True, default_value=128)
     # learning_rate = ConfigSpace.CategoricalHyperparameter(
     #     name='learning_rate', choices=['constant', 'invscaling', 'adaptive'], default_value='constant')
-    learning_rate = ConfigSpace.UniformFloatHyperparameter(
-        name='learning_rate', lower=1e-6, upper=1e-1, log=True, default_value=1e-2)
+    learning_rate_init = ConfigSpace.UniformFloatHyperparameter(
+        name='learning_rate_init', lower=1e-6, upper=1e-1, log=True, default_value=1e-2)
 
     epochs = ConfigSpace.UniformIntegerHyperparameter(
         name='epochs', lower=1, upper=50, default_value=20)
     batch_size = ConfigSpace.CategoricalHyperparameter(
-        name='batch_size', choices=[1, 2, 4, 8, 16, 32, 64, 128, 256, 512], default_value=128)
-    shuffle = ConfigSpace.CategoricalHyperparameter(
-        name='shuffle', choices=[True, False], default_value=True)
+        name='batch_size', choices=[32, 64, 128, 256, 512], default_value=128)
+    # shuffle = ConfigSpace.CategoricalHyperparameter(
+    #     name='shuffle', choices=[True, False], default_value=True)
     momentum = ConfigSpace.UniformFloatHyperparameter(
         name='momentum', lower=0, upper=1, default_value=0.9)
     weight_decay = ConfigSpace.UniformFloatHyperparameter(
@@ -54,9 +56,9 @@ def get_hyperparameter_search_space(seed=None):
 
     cs.add_hyperparameters([
         batch_size,
-        learning_rate,
+        learning_rate_init,
         epochs,
-        shuffle,
+        #shuffle,
         momentum,
         weight_decay,
     ])
@@ -77,7 +79,7 @@ f = fANOVA(X = features, Y = responses, config_space=cs, n_trees=16, seed=7)
 # first create an instance of the visualizer with fanova object and configspace
 vis = fanova.visualizer.Visualizer(f, cs, plot_dir)
 # plot marginals for each parameter
-for i in range(6):
-	vis.plot_marginal(i, show=False)
-	plt.savefig(plot_dir+'/'+str(i)+'.png')
-	plt.clf()
+for i in range(5):
+    vis.plot_marginal(i, show=False)
+    plt.savefig(plot_dir+'/'+str(i)+'.png')
+    plt.clf()
