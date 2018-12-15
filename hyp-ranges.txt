@@ -55,3 +55,11 @@ epoch - integer, linear, (1,50)
 momentum - float, linear, (0,1)
 batch_size - categorical, (32,64,128)
 weight_decay - float, log, (1e-6, 1e-2)
+
+flower
+------
+Initial lr - float, log, (1e-6,1e-1)
+epoch - integer, linear, (1,200)
+momentum - float, linear, (0,1)
+batch_size - categorical, (8, 16, 32,64,128)
+weight_decay - float, log, (1e-6, 1e-2)
