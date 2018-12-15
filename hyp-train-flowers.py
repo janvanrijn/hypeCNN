@@ -102,8 +102,7 @@ def load_data(shuffle, batch_size):
 	test_loader = torch.utils.data.DataLoader(testset, batch_size=1000, shuffle=shuffle, num_workers=4)
 	return train_loader, test_loader
 
-#def run_train(seed):
-if __name__ == '__main__':
+def run_train(seed):
 	device = torch.device("cuda")
 	print(device)
 	model = ResNet18(5).to(device)
