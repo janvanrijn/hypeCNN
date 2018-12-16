@@ -104,7 +104,7 @@ def load_data(shuffle, batch_size):
 
 def run_train(seed):
 	device = torch.device("cuda")
-	print(device)
+	#print(device)
 	model = ResNet18(5).to(device)
 	#### read hyps here ####
 	cs = get_hyperparameter_search_space(seed)
