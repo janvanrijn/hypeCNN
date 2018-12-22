@@ -67,8 +67,8 @@ def get_hyperparameter_search_space(seed=None):
 
 cs = get_hyperparameter_search_space()
 
-percentiles = np.percentile(responses, range(0,100))
-cutoffs = (percentiles[75], percentiles[100])
+percentiles = np.percentile(responses, 75)
+cutoffs = (percentiles, np.inf)
 f = fANOVA(X = features, Y = responses, config_space=cs, n_trees=16, seed=7, cutoffs=cutoffs)
 
 # marginal of particular parameter:
