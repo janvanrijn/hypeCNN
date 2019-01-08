@@ -67,7 +67,7 @@ def run(args):
         measure = column.split('_')[-1]
 
         # plot marginal contribution boxplot
-        data_measure = df_sorted(data, ['parameter'], 'marginal_contribution_accuracy')
+        data_measure = df_sorted(data, ['parameter'], column)
         fig, ax = plt.subplots(figsize=(8, 6))
         sns.boxplot(x='parameter', y=column, data=data_measure, ax=ax)
         output_file = os.path.join(args.output_dir, 'boxplot_%s.png' % measure)
