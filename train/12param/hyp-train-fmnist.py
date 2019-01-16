@@ -116,9 +116,9 @@ def load_data(shuffle, batch_size, resize_crop, h_flip, v_flip):
     transforms.Normalize((0.1307,), (0.3081,)),
     transforms.Lambda(lambda x: x.repeat(3, 1, 1) ),])
 
-    trainset = datasets.MNIST(root='../data', train=True, download=True, transform=transform_train)
+    trainset = datasets.FashionMNIST(root='../data', train=True, download=True, transform=transform_train)
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=shuffle)
-    testset = datasets.MNIST(root='../data', train=False, download=True, transform=transform_test)
+    testset = datasets.FashionMNIST(root='../data', train=False, download=True, transform=transform_test)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=1000, shuffle=shuffle)
     return train_loader, test_loader
 
