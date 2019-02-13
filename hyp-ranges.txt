@@ -1,3 +1,13 @@
+New params (common for all datasets)
+----------
+lr_decay - integer, log - (2,1000)
+patience - integer, linear - (2,200)
+tolerence - float, log - (1e-5,1e-2)
+resize / crop - binary
+vertical flip - binary
+horizontal flip - binary
+shuffle - binary
+
 MNIST and FMNIST
 ----------------
 lr - float, log, (1e-6,1e-1)
