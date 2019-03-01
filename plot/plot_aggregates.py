@@ -11,7 +11,7 @@ import seaborn as sns
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_file', type=str, default='../data/aggregated/importance-single.csv')
+    parser.add_argument('--input_file', type=str, default='../data/12param/aggregated/importance-single-12params.csv')
     parser.add_argument('--output_dir', type=str, default=os.path.expanduser('~/experiments/cnn_fanova/'))
     return parser.parse_args()
 
@@ -53,25 +53,32 @@ def run(args):
     os.makedirs(args.output_dir, exist_ok=True)
 
     matplotlib.rcParams['text.latex.preamble'] = [r"\usepackage{lmodern}"]
-    params = {'text.usetex': True,
-              'font.size': 11,
-              'font.family': 'lmodern',
-              'text.latex.unicode': True,
-              }
+    params = {
+        'text.usetex': True,
+        'font.size': 11,
+        'font.family': 'lmodern',
+        'text.latex.unicode': True,
+    }
     matplotlib.rcParams.update(params)
     iWidth = 6
     iTextspace = 1.3
-
+    
+    if not os.path.isfile(args.input_file):
+        raise ValueError('Input file not found: %s' % args.input_file)
     data = pd.read_csv(args.input_file)
+    data['parameter'] = data['parameter'].str.replace('_', ' ')
     for column in ['marginal_contribution_accuracy', 'marginal_contribution_runtime']:
+        logging.info('Starting with column %s' % column)
         measure = column.split('_')[-1]
-
+        
         # plot marginal contribution boxplot
         data_measure = df_sorted(data, ['parameter'], column)
         fig, ax = plt.subplots(figsize=(8, 6))
         sns.boxplot(x='parameter', y=column, data=data_measure, ax=ax)
         output_file = os.path.join(args.output_dir, 'boxplot_%s.png' % measure)
         ax.set_ylabel(measure)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+        plt.tight_layout()
         plt.savefig(output_file)
         logging.info('saved to %s' % output_file)
 
