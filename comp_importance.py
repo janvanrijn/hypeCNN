@@ -1,5 +1,5 @@
 import numpy as np
-from fanova import fANOVA
+import fanova
 import ConfigSpace
 from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 import sys
@@ -614,7 +614,7 @@ for d in dataset:
 
         #percentiles = np.percentile(responses, 75)
         #cutoffs = (percentiles, np.inf)
-        f = fANOVA(X = features, Y = responses, config_space=cs, n_trees=16, seed=7)#, cutoffs=cutoffs)
+        f = fanova.fANOVA(X = features, Y = responses, config_space=cs, n_trees=16, seed=7)#, cutoffs=cutoffs)
 
         # marginal of particular parameter:
         fil = open('imps/imp-'+d+'.txt', 'a')
