@@ -2,6 +2,7 @@ import arff
 import argparse
 import ConfigSpace
 import config_spaces
+import json
 import logging
 import numpy as np
 import openmlcontrib
@@ -27,16 +28,22 @@ def run(args):
     ]
 
     all_results = None
+    hyperparameters = None
     for dataset in config_spaces.DATASETS:
         results = pd.read_csv(os.path.join(args.input_dir, dataset, '%s-features.csv' % dataset), header=None, names=column_header)
         accuracy = np.loadtxt(os.path.join(args.input_dir, dataset, '%s-responses-acc.csv' % dataset), delimiter=',')
         runtime = np.loadtxt(os.path.join(args.input_dir, dataset, '%s-responses-time.csv' % dataset), delimiter=',')
         assert results.shape[0] == accuracy.shape[0] == runtime.shape[0]
-        results['accuracy'] = accuracy
+        results['predictive_accuracy'] = accuracy
         results['runtime'] = runtime
         results['dataset'] = dataset
 
         config_space = config_spaces.get_config_space(dataset, 0)
+        if hyperparameters is None:
+            hyperparameters = config_space.get_hyperparameter_names()
+        else:
+            assert hyperparameters == config_space.get_hyperparameter_names()
+
         # sanity checks on parameter values
         for hp in config_space.get_hyperparameters():
             if isinstance(hp, ConfigSpace.CategoricalHyperparameter):
@@ -47,7 +54,7 @@ def run(args):
                         raise ValueError('Illegal value for %s at %d: %s' % (hp.name, idx, value))
             else:
                 raise ValueError('Hyperparameter type not supported: %s' % hp.name)
-        for idx, value in enumerate(results['accuracy'].values):
+        for idx, value in enumerate(results['predictive_accuracy'].values):
             assert 0.0 <= value < 100.0, 'Accuracy iteration %d for dataset %s: %f' % (idx, dataset, value)
         for idx, value in enumerate(results['runtime'].values):
             assert 0.0 < value
@@ -56,7 +63,11 @@ def run(args):
         else:
             all_results = all_results.append(results)
     os.makedirs(args.output_dir, exist_ok=True)
-    arff_dict = openmlcontrib.meta.dataframe_to_arff(all_results, 'fanova-cnn', None)
+    json_meta = {
+        'col_measures': ['predictive_accuracy', 'runtime'],
+        'col_parameters': hyperparameters
+    }
+    arff_dict = openmlcontrib.meta.dataframe_to_arff(all_results, 'fanova-cnn', json.dumps(json_meta))
     output_file = os.path.join(args.output_dir, 'fanova-cnn.arff')
     with open(output_file, 'w') as fp:
         arff.dump(arff_dict, fp)
