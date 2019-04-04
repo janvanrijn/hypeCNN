@@ -1,12 +1,12 @@
 from __future__ import print_function
-import ConfigSpace
+import config_spaces
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 import sys
-from resnet import ResNet18
+from model import ResNet18
 from time import time
 
 
@@ -64,8 +64,9 @@ def load_data(shuffle, batch_size, resize_crop, h_flip, v_flip):
 def run_train(seed):
     device = torch.device("cuda")
     model = ResNet18(100).to(device)
+    print('Num parameters: %d' % model.count_parameters())
     #### read hyps here ####
-    cs = get_hyperparameter_search_space(seed)
+    cs = config_spaces.get_hyperparameter_search_space(seed)
     hyps = cs.sample_configuration(1).get_dictionary()
     lr = hyps['learning_rate_init']
     mom = hyps['momentum']
