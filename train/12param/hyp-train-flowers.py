@@ -1,12 +1,12 @@
 from __future__ import print_function
-import ConfigSpace
+import config_spaces
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 import sys
-from resnet import ResNet18
+from model import ResNet18
 from time import time
 
 
@@ -67,8 +67,9 @@ def run_train(seed):
     device = torch.device("cuda")
     #print(device)
     model = ResNet18(5).to(device)
+    print('Num parameters: %d' % model.count_parameters())
     #### read hyps here ####
-    cs = get_hyperparameter_search_space(seed)
+    cs = config_spaces.get_config_space('flower', seed)
     hyps = cs.sample_configuration(1).get_dictionary()
     lr = hyps['learning_rate_init']
     mom = hyps['momentum']
@@ -108,7 +109,8 @@ if __name__ == '__main__':
             s = ''
             for j in range(len(acc_list)):
                 s += str(i)+' '+str(acc_list[j])+' '+str(loss_list[j])+' '+str(time_list[j])+' '+str(j)+' '+str(hyps)+'\n'
-        except:
+        except Exception as e:
+            print(e)
             s = str(i)+' ERROR!\n'
         f = open('output.txt', 'a')
         f.write(s)

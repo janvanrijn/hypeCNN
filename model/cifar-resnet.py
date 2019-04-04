@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 import sys
-from resnet import ResNet18
+from .resnet import ResNet18
 from time import time
 
 # class Net(nn.Module):
