@@ -19,17 +19,17 @@ def get_hyperparameter_search_space(seed=None):
     """
     cs = ConfigSpace.ConfigurationSpace('ResNet18_classifier', seed)
     learning_rate_init = ConfigSpace.UniformFloatHyperparameter(
-        name='learning_rate_init', lower=1e-6, upper=1e-1, log=True, default_value=1e-1)
+        name='learning_rate_init', lower=1e-6, upper=1e-1, log=True, default_value=1e-2)
     epochs = ConfigSpace.UniformIntegerHyperparameter(
-        name='epochs', lower=1, upper=100, default_value=80)
+        name='epochs', lower=1, upper=50, default_value=20)
     batch_size = ConfigSpace.CategoricalHyperparameter(
-        name='batch_size', choices=[8, 16, 32, 64, 128], default_value=128)
+        name='batch_size', choices=[32, 64, 128, 256, 512], default_value=128)
     momentum = ConfigSpace.UniformFloatHyperparameter(
         name='momentum', lower=0, upper=1, default_value=0.9)
     weight_decay = ConfigSpace.UniformFloatHyperparameter(
         name='weight_decay', lower=1e-6, upper=1e-2, log=True, default_value=5e-4)
     lr_decay = ConfigSpace.UniformIntegerHyperparameter(
-        name='lr_decay', lower=2, upper=1000, log=True, default_value=10)
+        name='learning_rate_decay', lower=2, upper=1000, log=True, default_value=10)
     patience = ConfigSpace.UniformIntegerHyperparameter(
         name='patience', lower=2, upper=200, log=False, default_value=10)
     tolerance = ConfigSpace.UniformFloatHyperparameter(
@@ -37,9 +37,9 @@ def get_hyperparameter_search_space(seed=None):
     resize_crop = ConfigSpace.CategoricalHyperparameter(
         name='resize_crop', choices=[True, False], default_value=False)
     h_flip = ConfigSpace.CategoricalHyperparameter(
-        name='h_flip', choices=[True, False], default_value=False)
+        name='horizontal_flip', choices=[True, False], default_value=False)
     v_flip = ConfigSpace.CategoricalHyperparameter(
-        name='v_flip', choices=[True, False], default_value=False)
+        name='vertical_flip', choices=[True, False], default_value=False)
     shuffle = ConfigSpace.CategoricalHyperparameter(
         name='shuffle', choices=[True, False], default_value=True)
 

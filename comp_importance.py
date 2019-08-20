@@ -1,5 +1,5 @@
 import argparse
-import config_spaces
+from hypecnn import config_spaces
 import logging
 import numpy as np
 import fanova
